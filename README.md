@@ -4,6 +4,12 @@ A distributed commit log.
 
 ## Changelog
 
+### v0.2.0 Chapter 2 - Add a protobuf definition for Record
+Created a protobuf definition for log record at ./api/v1/log.proto and generated
+corresponding go stubs for it using `protoc`
+
+Created a convenience Makefile for easily generating go stubs in the future.
+
 ### v0.1.0 Chapter 1 - Basic append only log implementation
 Implemented as basic append only log and presented it with a simple REST API
 
