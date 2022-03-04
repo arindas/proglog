@@ -20,6 +20,29 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.3.1 Chapter 3 - Add a index impl for commit log package
+Implemented an index containing <segment relative offset, position in store file> entries.
+It is backed by a file on disk, which is mmap()-ed for frequent access.
+
+Real offsets are translated using segment relative offset + segment start offset. The
+segment start offset is stored in the config.
+
+The index implementation provides the following API:
+- `Read(in int64) (off uint32, pos uint64, err error)`
+  Reads and returns the segment relative offset and position in store for a record,
+  along with an error if any.
+  The parameter integer is interpreted as the sequence number. In case of negative
+  values, it is interpreted from the end.
+  (0 indicates first record, -1 indicates the last record)
+ 
+- `Write(off uint32, pos uint64) error`
+  Writes the given offset and the position pair at the end of the index file.
+  Returns an error if any.
+  
+  The offset and the position are binary encoded and written at the end of
+  the file. If the file doesn't have enough space to contain 12 bytes, EOF
+  is returned. We also increase the size of the file by 12 bytes, post writing.
+
 ### v0.3.0 Chapter 3 - Add a store impl for commit log package
 Created a buffered store implementation backed by a file for a commit log package.
 
