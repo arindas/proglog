@@ -15,7 +15,7 @@ on:
       - internal/**
 
 jobs:
-  test-mapreduce:
+  test-log:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
