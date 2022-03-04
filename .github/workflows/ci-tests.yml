@@ -1,0 +1,23 @@
+name: ci-tests
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - api/**
+      - internal/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - api/**
+      - internal/**
+
+jobs:
+  test-mapreduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd internal/log && go test -race
+ 

@@ -34,7 +34,7 @@ The store implementation is intended to be package local and provides the follow
 Added tests for verifying the correctness of the implementation.
 
 ### v0.2.0 Chapter 2 - Add a protobuf definition for Record
-Created a protobuf definition for log record at ./api/v1/log.proto and generated
+Created a protobuf definition for log record in [log.proto](./api/v1/log.proto) and generated
 corresponding go stubs for it using `protoc`
 
 Created a convenience Makefile for easily generating go stubs in the future.
@@ -55,3 +55,6 @@ We expose this log as REST API with the following methods:
   which it was written in json response.
 - `[GET /] { offset: uint64 } => { record: []bytes }`
   Responds with record at the offset in the request.
+
+## License
+This repository is presented under the MIT License. See [LICENSE](./LICENSE) for more details.
