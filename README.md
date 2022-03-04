@@ -22,7 +22,7 @@ use this as a reference. If you prefer the original source, refer to the officia
 Created a buffered store implementation backed by a file for a commit log package.
 
 The store implementation is intended to be package local and provides the following API:
-- `Append([]byte) bytesWritten uint64, position uint64, err error``
+- `Append([]byte) bytesWritten uint64, position uint64, err error`
   Appends the given bytes as a record to this store. Returns the number of bytes written,
   the position at which is written along with errors if any.
 - `Read(pos uint64) []byte, error`
