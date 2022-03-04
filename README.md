@@ -1,4 +1,6 @@
 # proglog
+[![ci-tests](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml)
+
 A distributed commit log.
 
 This repository follows the book 
