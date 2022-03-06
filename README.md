@@ -20,6 +20,19 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.3.2 Chapter 3 - Add a segment impl for commit log package
+Segment represents a Log segment with a store file and a index to speed up reads. It is
+the data structure to unify data store and indexes.
+
+The segment implementation provides the following API:
+- `Append(record *api.Record) (offset uint64, err error)` 
+  Appends a new record to this segment. Returns the absolute offset of
+  the newly written record along with an error if any.
+
+- `Read(off uint64) (*api.Record, error)`
+  Reads the record at the given absolute offset. Returns the record read
+  along with an error if any.
+
 ### v0.3.1 Chapter 3 - Add a index impl for commit log package
 Implemented an index containing <segment relative offset, position in store file> entries.
 It is backed by a file on disk, which is mmap()-ed for frequent access.

@@ -9,6 +9,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// Struct segment represents a Log segment with a store file and a index to speed up reads. It is
+// the data structure to unify data store and indexes.
 type segment struct {
 	store                  *store
 	index                  *index
