@@ -1,5 +1,7 @@
 # proglog
+[![Go Report Card](https://goreportcard.com/badge/github.com/arindas/proglog)](https://goreportcard.com/report/github.com/arindas/proglog)
 [![ci-tests](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml)
+[![mit-license](https://img.shields.io/badge/License-MIT-green.svg)](https://img.shields.io/badge/License-MIT-green.svg)
 
 A distributed commit log.
 
@@ -19,6 +21,17 @@ while still adhering to correctness with all the tests. Please keep this in mind
 use this as a reference. If you prefer the original source, refer to the official repository instead.
 
 ## Changelog
+
+### v0.3.3 Chapter 3 - Completed the Log Implementation.
+A log is paritioned into a collection of segments, sorted by the offsets
+of the records they contain. The last segment is the active segment.
+
+Writes goto the last segment till it's capacity is maxed out. Once it's
+capacity is full, we create new segment and set it as the active segment.
+
+Read operations are serviced by a linear search on the segments to find
+the segment which contains the given offset. If the segment is found, we
+simply utilize its Read() operation to read the record.
 
 ### v0.3.2 Chapter 3 - Add a segment impl for commit log package
 Segment represents a Log segment with a store file and a index to speed up reads. It is

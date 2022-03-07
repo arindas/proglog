@@ -18,6 +18,11 @@ type segment struct {
 	config                 Config
 }
 
+const (
+	storeExt = ".store"
+	indexExt = ".index"
+)
+
 // Creates a new segment from the given base directory, baseOffset and Config.
 // Returns a pointer to the segment along with an error if any.
 //
@@ -28,7 +33,7 @@ func newSegment(dir string, baseOffset uint64, c Config) (*segment, error) {
 
 	// create the store
 	storeFile, err := os.OpenFile(
-		path.Join(dir, fmt.Sprintf("%d%s", baseOffset, ".store")),
+		path.Join(dir, fmt.Sprintf("%d%s", baseOffset, storeExt)),
 		os.O_RDWR|os.O_CREATE|os.O_APPEND,
 		0644,
 	)
@@ -41,7 +46,7 @@ func newSegment(dir string, baseOffset uint64, c Config) (*segment, error) {
 
 	// create the index
 	indexFile, err := os.OpenFile(
-		path.Join(dir, fmt.Sprintf("%d%s", baseOffset, ".index")),
+		path.Join(dir, fmt.Sprintf("%d%s", baseOffset, indexExt)),
 		os.O_RDWR|os.O_CREATE,
 		0644,
 	)
