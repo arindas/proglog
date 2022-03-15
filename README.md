@@ -22,7 +22,7 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
-### v0.3.4 Chapter 4 - Serve Requests with gRPC
+### v0.4.0 Chapter 4 - Serve Requests with gRPC
 Presented the log as a gRPC service, with the following protobuf definitions:
 ```proto
 // Messages
