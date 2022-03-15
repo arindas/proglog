@@ -15,9 +15,13 @@ on:
       - internal/**
 
 jobs:
-  test-log:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cd internal/log && go test -race
- 
+      - name: Test Log
+        working-directory: ./internal/log
+        run: go test -v -race
+      - name: Test Server
+        working-directory: ./internal/server
+        run: go test -v -race 

@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Configuration for server. Contains providers for different services.
 type Config struct{ CommitLog CommitLog }
 
 type grpcServer struct {
@@ -20,6 +21,7 @@ func newgrpcServer(config *Config) (*grpcServer, error) {
 	return &grpcServer{Config: config}, nil
 }
 
+// Produces a single record to the log which backs this server.
 func (s *grpcServer) Produce(ctx context.Context, req *api.ProduceRequest) (*api.ProduceResponse, error) {
 	offset, err := s.CommitLog.Append(req.Record)
 	if err != nil {
@@ -28,6 +30,7 @@ func (s *grpcServer) Produce(ctx context.Context, req *api.ProduceRequest) (*api
 	return &api.ProduceResponse{Offset: offset}, nil
 }
 
+// Consumes the record present at the given offset from the log which backs this server.
 func (s *grpcServer) Consume(ctx context.Context, req *api.ConsumeRequest) (*api.ConsumeResponse, error) {
 	record, err := s.CommitLog.Read(req.Offset)
 	if err != nil {
@@ -36,6 +39,8 @@ func (s *grpcServer) Consume(ctx context.Context, req *api.ConsumeRequest) (*api
 	return &api.ConsumeResponse{Record: record}, nil
 }
 
+// Bidrectional endpoint, reads records from the given stream, produces them to the underlying commit log
+// and writes the offsets written to, to the given stream.
 func (s *grpcServer) ProduceStream(stream api.Log_ProduceStreamServer) error {
 	for {
 		req, err := stream.Recv()
@@ -54,6 +59,8 @@ func (s *grpcServer) ProduceStream(stream api.Log_ProduceStreamServer) error {
 	}
 }
 
+// Sequentially reads the records from the given offset to the end of the log and writes then to
+// the given stream.
 func (s *grpcServer) ConsumeStream(req *api.ConsumeRequest, stream api.Log_ConsumeStreamServer) error {
 	for {
 		select {
@@ -78,6 +85,7 @@ func (s *grpcServer) ConsumeStream(req *api.ConsumeRequest, stream api.Log_Consu
 	}
 }
 
+// Creates a new GRPC server for our log service with the given configuration.
 func NewGRPCServer(config *Config) (*grpc.Server, error) {
 	gsrv := grpc.NewServer()
 	srv, err := newgrpcServer(config)

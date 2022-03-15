@@ -22,6 +22,38 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.3.4 Chapter 4 - Serve Requests with gRPC
+Presented the log as a gRPC service, with the following protobuf definitions:
+```proto
+// Messages
+message Record { bytes value = 1; uint64 offset = 2; }
+
+message ProduceRequest { Record record = 1; }
+message ProduceResponse { uint64 offset = 1; }
+
+message ConsumeRequest { uint64 offset = 1; }
+message ConsumeResponse { Record record = 2; }
+
+
+// Log Service
+service Log {
+    rpc Produce(ProduceRequest) returns (ProduceResponse) {}
+    rpc Consume(ConsumeRequest) returns (ConsumeResponse) {}
+    rpc ConsumeStream(ConsumeRequest) returns (stream ConsumeResponse) {}
+    rpc ProduceStream(stream ProduceRequest) returns (stream ProduceResponse) {}
+}
+```
+
+`Produce` and `Consume` are simply wrappers to a log implementation which produce a record and consume
+a record from the underlying log.
+
+`ProduceStream` uses a bi-directional stream. It reads records from the stream, produces them to the
+log, and writes the returned offsets to the stream.
+
+`ConsumeStream` simply accepts an offset and returns a read only stream to read records starting from
+the given offset to the end of the log.
+   
+
 ### v0.3.3 Chapter 3 - Completed the Log Implementation.
 A log is paritioned into a collection of segments, sorted by the offsets
 of the records they contain. The last segment is the active segment.
