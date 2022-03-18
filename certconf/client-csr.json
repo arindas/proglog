@@ -1,0 +1,19 @@
+{
+    "CN": "client",
+    "hosts": [
+        ""
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "Country b950cc7",
+            "L": "Locality b950cc7",
+            "ST": "State b950cc7",
+            "O": "Organization b950cc7",
+            "OU": "Organizational Unit b950cc7"
+        }
+    ]
+}

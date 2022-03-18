@@ -1,3 +1,31 @@
+CONFIG_PATH=${HOME}/.config/proglog
+
+.PHONY: clean-conf
+clean-conf:
+	rm -rf ${CONFIG_PATH}
+
+.PHONY: init
+init:
+	mkdir -p ${CONFIG_PATH}
+
+.PHONY: gencert
+gencert: init
+	cfssl gencert \
+		-initca ./certconf/ca-csr.json | cfssljson -bare ca
+	cfssl gencert \
+		-ca=ca.pem \
+		-ca-key=ca-key.pem \
+		-config=./certconf/ca-config.json \
+		-profile=server \
+		./certconf/server-csr.json | cfssljson -bare server
+	cfssl gencert \
+		-ca=ca.pem \
+		-ca-key=ca-key.pem \
+		-config=./certconf/ca-config.json \
+		-profile=client \
+		./certconf/client-csr.json | cfssljson -bare client
+	mv *.pem *.csr ${CONFIG_PATH}
+
 compile:
 	protoc api/v1/*.proto \
 		--go_out=. \
