@@ -11,29 +11,29 @@ init:
 .PHONY: gencert
 gencert: init
 	cfssl gencert \
-		-initca ./certconf/ca-csr.json | cfssljson -bare ca
+		-initca ./testconf/certconf/ca-csr.json | cfssljson -bare ca
 
 	cfssl gencert \
 		-ca=ca.pem \
 		-ca-key=ca-key.pem \
-		-config=./certconf/ca-config.json \
+		-config=./testconf/certconf/ca-config.json \
 		-profile=server \
-		./certconf/server-csr.json | cfssljson -bare server
+		./testconf/certconf/server-csr.json | cfssljson -bare server
 
 	cfssl gencert \
 		-ca=ca.pem \
 		-ca-key=ca-key.pem \
-		-config=./certconf/ca-config.json \
+		-config=./testconf/certconf/ca-config.json \
 		-profile=client \
 		-cn="root" \
-		./certconf/client-csr.json | cfssljson -bare root-client
+		./testconf/certconf/client-csr.json | cfssljson -bare root-client
 	cfssl gencert \
 		-ca=ca.pem \
 		-ca-key=ca-key.pem \
-		-config=./certconf/ca-config.json \
+		-config=./testconf/certconf/ca-config.json \
 		-profile=client \
 		-cn="nobody" \
-		./certconf/client-csr.json | cfssljson -bare nobody-client
+		./testconf/certconf/client-csr.json | cfssljson -bare nobody-client
 
 	mv *.pem *.csr ${CONFIG_PATH}
 
