@@ -22,6 +22,16 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.5.0 Chapter 5 - Secure our service
+Implemented TLS authentication for clients and servers. Added authorization support with Access control lists.
+
+```
+f879aaa Tested and verified that unauthorized clients are denied access
+a39869e Moved configuration necessary for tests into testconf
+87fbe5f Moved to multiple clients to test ACL implementation.
+44d430e Implemented mutual TLS authentication for our GRPC Log Service in tests
+```
+
 ### v0.4.0 Chapter 4 - Serve Requests with gRPC
 Presented the log as a gRPC service, with the following protobuf definitions:
 ```proto
