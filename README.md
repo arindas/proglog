@@ -22,6 +22,18 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.5.1 Chapter 5 - Corrected github action to properly install cfssl* tools.
+Here's the github workflow step for generating the configs for testing authentication and authorization.
+
+```
+- name: Generate Config
+  run: |
+    go get github.com/cloudflare/cfssl/cmd/... 
+    export PATH=${PATH}:${HOME}/go/bin
+    make gencert
+    make genacl
+```
+
 ### v0.5.0 Chapter 5 - Secure our service
 Implemented TLS authentication for clients and servers. Added authorization support with Access control lists.
 
