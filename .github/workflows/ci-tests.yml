@@ -19,6 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Generate Config
+        run: |
+          make gencert
+          make genacl
       - name: Test Log
         working-directory: ./internal/log
         run: go test -v -race

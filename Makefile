@@ -37,6 +37,16 @@ gencert: init
 
 	mv *.pem *.csr ${CONFIG_PATH}
 
+$(CONFIG_PATH)/model.conf:
+	cp ./testconf/aclconf/model.conf ${CONFIG_PATH}/model.conf
+
+$(CONFIG_PATH)/policy.csv:
+	cp ./testconf/aclconf/policy.csv ${CONFIG_PATH}/policy.csv
+
+.PHONY: genacl
+genacl: $(CONFIG_PATH)/model.conf $(CONFIG_PATH)/policy.csv
+	echo "Access control lists configured."
+
 compile:
 	protoc api/v1/*.proto \
 		--go_out=. \
