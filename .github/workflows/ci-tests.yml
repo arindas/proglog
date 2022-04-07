@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Generate Config
         run: |
-          go install github.com/cloudflare/cfssl/cmd/...
+          go get github.com/cloudflare/cfssl/cmd/... 
           export PATH=${PATH}:${HOME}/go/bin
           make gencert
           make genacl
