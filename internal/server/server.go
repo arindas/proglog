@@ -8,10 +8,16 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/peer"
-	"google.golang.org/grpc/status"
+
+	"time"
+
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	"go.opencensus.io/plugin/ocgrpc"
+	"go.opencensus.io/stats/view"
+	"go.opencensus.io/trace"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // Configuration for server. Contains providers for different services.
@@ -25,38 +31,11 @@ type grpcServer struct {
 	*Config
 }
 
-const (
-	objectWildCard = "*"
-	produceAction  = "produce"
-	consumeAction  = "consume"
-)
-
 var _ api.LogServer = (*grpcServer)(nil)
 
 func newgrpcServer(config *Config) (*grpcServer, error) {
 	return &grpcServer{Config: config}, nil
 }
-
-func authenticate(ctx context.Context) (context.Context, error) {
-	peer, ok := peer.FromContext(ctx)
-	if !ok {
-		return ctx, status.New(codes.Unknown, "couldn't find peer info").Err()
-	}
-
-	if peer.AuthInfo == nil {
-		return context.WithValue(ctx, subjectContextKey{}, ""), nil
-	}
-
-	tlsInfo := peer.AuthInfo.(credentials.TLSInfo)
-	subject := tlsInfo.State.VerifiedChains[0][0].Subject.CommonName
-	ctx = context.WithValue(ctx, subjectContextKey{}, subject)
-
-	return ctx, nil
-}
-
-type subjectContextKey struct{}
-
-func subject(ctx context.Context) string { return ctx.Value(subjectContextKey{}).(string) }
 
 // Produces a single record to the log which backs this server.
 func (s *grpcServer) Produce(ctx context.Context, req *api.ProduceRequest) (*api.ProduceResponse, error) {
@@ -132,9 +111,33 @@ func (s *grpcServer) ConsumeStream(req *api.ConsumeRequest, stream api.Log_Consu
 
 // Creates a new GRPC server for our log service with the given configuration.
 func NewGRPCServer(config *Config, opts ...grpc.ServerOption) (*grpc.Server, error) {
+	logger := zap.L().Named("server")
+	zapOpts := []grpc_zap.Option{
+		grpc_zap.WithDurationField(func(duration time.Duration) zapcore.Field {
+			return zap.Int64("grpc.time_ns", duration.Nanoseconds())
+		}),
+	}
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+	if err := view.Register(ocgrpc.DefaultServerViews...); err != nil {
+		return nil, err
+	}
+
 	opts = append(opts,
-		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(grpc_auth.StreamServerInterceptor(authenticate))),
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(grpc_auth.UnaryServerInterceptor(authenticate))),
+		grpc.StreamInterceptor(
+			grpc_middleware.ChainStreamServer(
+				grpc_ctxtags.StreamServerInterceptor(),
+				grpc_zap.StreamServerInterceptor(logger, zapOpts...),
+				grpc_auth.StreamServerInterceptor(authenticate),
+			),
+		),
+		grpc.UnaryInterceptor(
+			grpc_middleware.ChainUnaryServer(
+				grpc_ctxtags.UnaryServerInterceptor(),
+				grpc_zap.UnaryServerInterceptor(logger, zapOpts...),
+				grpc_auth.UnaryServerInterceptor(authenticate),
+			),
+		),
+		grpc.StatsHandler(&ocgrpc.ServerHandler{}),
 	)
 
 	gsrv := grpc.NewServer(opts...)

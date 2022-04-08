@@ -22,6 +22,10 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.6.0 Chapter 6 - Observe your systems
+Implemented tracing and metric collection for our service with OpenCensus. Added logging with Uber Zap.
+This simply required us to setup and wire the required middlewares for each.
+
 ### v0.5.1 Chapter 5 - Corrected github action to properly install cfssl* tools.
 Here's the github workflow step for generating the configs for testing authentication and authorization.
 
