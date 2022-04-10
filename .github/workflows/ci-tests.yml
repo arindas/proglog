@@ -31,3 +31,6 @@ jobs:
       - name: Test Server
         working-directory: ./internal/server
         run: go test -v -race 
+      - name: Test Service discovery
+        working-directory: ./internal/discovery
+        run: go test -v -race
