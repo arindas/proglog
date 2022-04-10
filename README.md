@@ -22,6 +22,59 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.7.0 Chapter 7 - Service Discovery: Discover services with Serf
+Implemented a Serf cluster membership manager. It handles cluster membership events and manages cluster
+membership operations. Membership event handling is made configurable with the following interface:
+
+```go
+// Handler for cluster membership modification operations for a Node.
+type Handler interface {
+	Join(name, addr string) error
+	Leave(name string) error
+}
+```
+
+Our Membership manager used the following configuration:
+```go
+// Configuration of a single node in a Surf cluster.
+type Config struct {
+	// NodeName acts as the node's unique identifier across the Serf cluster.
+	NodeName string
+
+	// Serf listens on this address for gossiping. [Ref: gossip protocol serf]
+	BindAddr string
+
+	// Used for sharing data to other nodes in the cluster. This information is
+	// used by the cluster to decide how to handle this node.
+	Tags map[string]string
+
+	// Used for joining a new node to the cluster. Joining a new node requires
+	// pointing to atleast one in-cluster node. In a prod env., it's advisable
+	// to specify at least 3 addrs to increase cluster resliency.
+	StartJoinAddrs []string
+}
+```
+
+Where "name" refers to node name and "addr" refers to the node RPC address.
+
+On every node that it's configured in, our membership manager does the following operations:
+- Binds and listen's on a unique port on localhost for mebership events from the network. (As used by
+Serf's gossip protocol.)
+- Sets up serf config with the binded address and port, the node name and the tags
+- Routes mebership events from the network to a channel for easy consumption
+- Start listening for membership events from the routed channel
+- If addresses for Nodes in an existing cluster are provided via "StartJoinAddrs", we issue a join request
+with the provided address to join the cluster. If not a new cluster is created with only the invoking node.
+
+Our membership managers are created with a simple constructor function:
+```go
+// Creates a new Serf cluster member with the given config and cluster handler.
+// It internally setups up the Serf configuration and event handlers.
+func New(handler Handler, config Config) (*Membership, error) { … }
+
+```
+
+
 ### v0.6.0 Chapter 6 - Observe your systems
 Implemented tracing and metric collection for our service with OpenCensus. Added logging with Uber Zap.
 This simply required us to setup and wire the required middlewares for each.
