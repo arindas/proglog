@@ -36,16 +36,18 @@ type Config struct {
 	ServerTLSConfig *tls.Config // TLS authentication config for server
 	PeerTLSConfig   *tls.Config // TLS authentication config for peers
 
-	DataDir        string   // Data directory for storing log records
-	BindAddr       string   // Address to bind on for listening to cluster membership and commitlog RPC requests
-	RPCPort        int      // RPC Port to use for listening to cluster membership events and commitlog RPC requests
+	DataDir string // Data directory for storing log records
+
+	BindAddr       string   // Binded server address for serving log RPC requests and cluster membership
+	RPCPort        int      // Port used along with BindAddr
 	NodeName       string   // Node name to use for cluster membership
-	StartJoinAddrs []string // Initial cluster addresses to join for being a member to the cluster
+	StartJoinAddrs []string // Addresses of nodes from the cluster. Used for joining the cluster
 
 	ACLModelFile  string // Access control list model file for authorization
 	ACLPolicyFile string // Access control list policy file for authorization
 }
 
+// RPC Socket Address with format "{BindAddr}:{RPCPort}"
 func (c Config) RPCAddr() (string, error) {
 	if host, _, err := net.SplitHostPort(c.BindAddr); err != nil {
 		return "", err
@@ -54,6 +56,9 @@ func (c Config) RPCAddr() (string, error) {
 	}
 }
 
+// Shuts down the commit log service agent. The following steps are taken: Leave Cluster, Stop record
+// replication, gracefully stop RPC server, cleanup data structures for the commit log.
+// Returns any error which occurs during the shutdown process, nil otherwise.
 func (a *Agent) Shutdown() error {
 	a.shutdownLock.Lock()
 	defer a.shutdownLock.Unlock()
@@ -64,7 +69,7 @@ func (a *Agent) Shutdown() error {
 	a.shutdown = true
 	close(a.shutdowns)
 
-	shutdown := []func() error{
+	shutdownFns := []func() error{
 		a.membership.Leave,
 		a.replicator.Close,
 		func() error {
@@ -74,7 +79,7 @@ func (a *Agent) Shutdown() error {
 		a.log.Close,
 	}
 
-	for _, fn := range shutdown {
+	for _, fn := range shutdownFns {
 		if err := fn(); err != nil {
 			return err
 		}
@@ -134,6 +139,12 @@ func (a *Agent) setupServer() error {
 	return nil
 }
 
+// Sets up cluster membership handlers for this commit log service. This method instantiates
+// the cluster membership handlers with that of the log replicator. This effectively allows this
+// commit log service instance to replicate records from all nodes and any new nodes that
+// joins the cluster, of which this service instance is a member. We also responsibly stop
+// replicating records from any node that leaves the cluster.
+// Returns any error which occurs during the membership setup, nil otherwise.
 func (a *Agent) setupMembership() error {
 	rpcAddr, err := a.Config.RPCAddr()
 	if err != nil {
@@ -168,17 +179,21 @@ func (a *Agent) setupMembership() error {
 	return err
 }
 
+// Constructs a new Agent instance. It take the following steps for setting up an Agent:
+// Setup application logging, created data-structures for the commit log, setup the RPC
+// server and finally start the cluster membership manager.
+// Returns any error which occurs during the membership setup, nil otherwise.
 func New(config Config) (*Agent, error) {
 	agent := &Agent{Config: config, shutdowns: make(chan struct{})}
 
-	setup := []func() error{
+	setupFns := []func() error{
 		agent.setupLogger,
 		agent.setupLog,
 		agent.setupServer,
 		agent.setupMembership,
 	}
 
-	for _, fn := range setup {
+	for _, fn := range setupFns {
 		if err := fn(); err != nil {
 			return nil, err
 		}
