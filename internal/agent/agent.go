@@ -38,8 +38,8 @@ type Config struct {
 
 	DataDir string // Data directory for storing log records
 
-	BindAddr       string   // Binded server address for serving log RPC requests and cluster membership
-	RPCPort        int      // Port used along with BindAddr
+	BindAddr       string   // Address of socket used for listening to cluster membership events
+	RPCPort        int      // Port used for serving log service GRPC requests
 	NodeName       string   // Node name to use for cluster membership
 	StartJoinAddrs []string // Addresses of nodes from the cluster. Used for joining the cluster
 
@@ -47,7 +47,8 @@ type Config struct {
 	ACLPolicyFile string // Access control list policy file for authorization
 }
 
-// RPC Socket Address with format "{BindAddr}:{RPCPort}"
+// RPC Socket Address with format "{BindAddrHost}:{RPCPort}"
+// BindAddr and RPCAddr share the same host.
 func (c Config) RPCAddr() (string, error) {
 	if host, _, err := net.SplitHostPort(c.BindAddr); err != nil {
 		return "", err
@@ -57,7 +58,8 @@ func (c Config) RPCAddr() (string, error) {
 }
 
 // Shuts down the commit log service agent. The following steps are taken: Leave Cluster, Stop record
-// replication, gracefully stop RPC server, cleanup data structures for the commit log.
+// replication, gracefully stop RPC server, cleanup data structures for the commit log. This method
+// retains the files written by the log service since they might be necessary for data recovery.
 // Returns any error which occurs during the shutdown process, nil otherwise.
 func (a *Agent) Shutdown() error {
 	a.shutdownLock.Lock()

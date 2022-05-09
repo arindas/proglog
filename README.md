@@ -22,6 +22,66 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.7.1 Chapter 7 - Replication, Log Service Agent
+Implemented log replication: consume logs from every peer in the cluster and produce them locally. (This
+behavior leads to infinite replication of the same record since there is no well defined leader-follower
+relationship. The original producer, ends up consuming the same record from another peer which consumed
+the record from itself.)
+
+Orchestrated the different components of our log service using a single 'Agent' entity:
+
+```go
+type Agent struct {
+  Config
+
+  // … unexported members
+}
+```
+`Agent` requires the following configuration:
+```go
+// Represents the configuration for our Agent.
+type Config struct {
+	ServerTLSConfig *tls.Config // TLS authentication config for server
+	PeerTLSConfig   *tls.Config // TLS authentication config for peers
+
+	DataDir string // Data directory for storing log records
+
+	BindAddr       string   // Address of socket used for listening to cluster membership events
+	RPCPort        int      // Port used for serving log service GRPC requests
+	NodeName       string   // Node name to use for cluster membership
+	StartJoinAddrs []string // Addresses of nodes from the cluster. Used for joining the cluster
+
+	ACLModelFile  string // Access control list model file for authorization
+	ACLPolicyFile string // Access control list policy file for authorization
+}
+```
+
+It exposes the following methods:
+```go
+// RPC Socket Address with format "{BindAddrHost}:{RPCPort}"
+// BindAddr and RPCAddr share the same host.
+func (c Config) RPCAddr() (string, error) { … }
+
+// Shuts down the commit log service agent. The following steps are taken: Leave Cluster, Stop record
+// replication, gracefully stop RPC server, cleanup data structures for the commit log. This method
+// retains the files written by the log service since they might be necessary for data recovery.
+// Returns any error which occurs during the shutdown process, nil otherwise.
+func (a *Agent) Shutdown() error { … }
+
+// Constructs a new Agent instance. It take the following steps for setting up an Agent:
+// Setup application logging, created data-structures for the commit log, setup the RPC
+// server and finally start the cluster membership manager.
+// Returns any error which occurs during the membership setup, nil otherwise.
+//
+// Sets up cluster membership handlers for this commit log service. This method instantiates
+// the cluster membership handlers with that of the log replicator. This effectively allows this
+// commit log service instance to replicate records from all nodes and any new nodes that
+// joins the cluster, of which this service instance is a member. We also responsibly stop
+// replicating records from any node that leaves the cluster.
+func New(config Config) (*Agent, error) { … }
+
+```
+
 ### v0.7.0 Chapter 7 - Service Discovery: Discover services with Serf
 Implemented a Serf cluster membership manager. It handles cluster membership events and manages cluster
 membership operations. Membership event handling is made configurable with the following interface:

@@ -17,9 +17,12 @@ replace github.com/arindas/proglog/api/log_v1 => ../../api/v1
 require (
 	github.com/arindas/proglog/api/log_v1 v0.0.0-00010101000000-000000000000
 	github.com/arindas/proglog/internal/auth v0.0.0-00010101000000-000000000000
+	github.com/arindas/proglog/internal/config v0.0.0-00010101000000-000000000000
 	github.com/arindas/proglog/internal/discovery v0.0.0-00010101000000-000000000000
 	github.com/arindas/proglog/internal/log v0.0.0-00010101000000-000000000000
 	github.com/arindas/proglog/internal/server v0.0.0-00010101000000-000000000000
+	github.com/stretchr/testify v1.7.0
+	github.com/travisjeffery/go-dynaport v1.0.0
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.45.0
 )
@@ -28,6 +31,7 @@ require (
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
 	github.com/casbin/casbin v1.9.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
@@ -41,6 +45,7 @@ require (
 	github.com/hashicorp/memberlist v0.3.0 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
 	github.com/miekg/dns v1.1.41 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/tysonmote/gommap v0.0.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
@@ -51,4 +56,5 @@ require (
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
