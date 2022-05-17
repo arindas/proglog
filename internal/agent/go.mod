@@ -46,12 +46,13 @@ require (
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/hashicorp/memberlist v0.3.0 // indirect
 	github.com/hashicorp/raft v1.3.9 // indirect
-	github.com/hashicorp/raft-boltdb v0.0.0-20220329195025-15018e9b97e0 // indirect
+	github.com/hashicorp/raft-boltdb/v2 v2.2.2 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
 	github.com/miekg/dns v1.1.41 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/tysonmote/gommap v0.0.1 // indirect
+	go.etcd.io/bbolt v1.3.5 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
