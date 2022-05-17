@@ -21,6 +21,8 @@ require (
 	github.com/arindas/proglog/internal/discovery v0.0.0-00010101000000-000000000000
 	github.com/arindas/proglog/internal/log v0.0.0-00010101000000-000000000000
 	github.com/arindas/proglog/internal/server v0.0.0-00010101000000-000000000000
+	github.com/hashicorp/raft v1.3.9
+	github.com/soheilhy/cmux v0.1.5
 	github.com/stretchr/testify v1.7.0
 	github.com/travisjeffery/go-dynaport v1.0.0
 	go.uber.org/zap v1.21.0
@@ -45,7 +47,6 @@ require (
 	github.com/hashicorp/go-sockaddr v1.0.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/hashicorp/memberlist v0.3.0 // indirect
-	github.com/hashicorp/raft v1.3.9 // indirect
 	github.com/hashicorp/raft-boltdb/v2 v2.2.2 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
 	github.com/miekg/dns v1.1.41 // indirect

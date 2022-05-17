@@ -34,6 +34,6 @@ jobs:
       - name: Test Service discovery
         working-directory: ./internal/discovery
         run: go test -v -race
-      - name: Test Agent (with replication)
+      - name: Test Agent (with raft consensus)
         working-directory: ./internal/agent
         run: go test -v -race
