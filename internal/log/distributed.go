@@ -219,6 +219,78 @@ func (l *DistributedLog) Read(offset uint64) (*api.Record, error) {
 	return l.log.Read(offset)
 }
 
+// Serf cluster membership "join" event handler.
+func (l *DistributedLog) Join(id, addr string) error {
+	configFuture := l.raft.GetConfiguration()
+	if err := configFuture.Error(); err != nil {
+		return err
+	}
+
+	serverID, serverAddress := raft.ServerID(id), raft.ServerAddress(addr)
+
+	// remove any existing server with matching serverId or serverAddress
+	for _, server := range configFuture.Configuration().Servers {
+		if server.ID == serverID || server.Address == serverAddress {
+			if server.ID == serverID && server.Address == serverAddress {
+				// server has already joined
+				return nil
+			}
+
+			// remove the existing server
+			removeFuture := l.raft.RemoveServer(serverID, 0, 0)
+			if err := removeFuture.Error(); err != nil {
+				return err
+			}
+		}
+	}
+
+	// add new server as a voter to this raft cluster
+	addFuture := l.raft.AddVoter(serverID, serverAddress, 0, 0)
+	if err := addFuture.Error(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Serf "leave" event handler for our Raft cluster.
+func (l *DistributedLog) Leave(id string) error {
+	return l.raft.RemoveServer(raft.ServerID(id), 0, 0).Error()
+}
+
+// Waits for leader to be elected synchronously.
+// We check every second upto the given timeout duration whether a leader
+// has been elected or not. If the leader is elected at some tick second
+// we return. Otherwise we return after the timeout duration with an error.
+//
+// This method is mostly useful in tests.
+func (l *DistributedLog) WaitForLeader(timeout time.Duration) error {
+	timeoutc := time.After(timeout)
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-timeoutc:
+			return fmt.Errorf("timed out")
+		case <-ticker.C:
+			// if leader has been elected
+			if l.raft.Leader() != "" {
+				return nil
+			}
+		}
+	}
+}
+
+func (l *DistributedLog) Close() error {
+	shutdownFuture := l.raft.Shutdown()
+	if err := shutdownFuture.Error(); err != nil {
+		return err
+	}
+
+	return l.log.Close()
+}
+
 var _ raft.FSM = (*fsm)(nil)
 
 // Finite state machine implementation for our distributed log's

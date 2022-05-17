@@ -3,6 +3,7 @@ package discovery
 import (
 	"net"
 
+	"github.com/hashicorp/raft"
 	"github.com/hashicorp/serf/serf"
 	"go.uber.org/zap"
 )
@@ -55,7 +56,15 @@ func (m *Membership) Members() []serf.Member { return m.serf.Members() }
 func (m *Membership) Leave() error { return m.serf.Leave() }
 
 func (m *Membership) logError(err error, msg string, member serf.Member) {
-	m.logger.Error(
+	log := m.logger.Error
+	if err == raft.ErrNotLeader {
+		// only the leader can remove member from the Raft cluster
+		// so this error is to be expected from the membership
+		// event handlers of the non-leaders
+		log = m.logger.Debug
+	}
+
+	log(
 		msg,
 		zap.Error(err),
 		zap.String("name", member.Name),
