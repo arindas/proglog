@@ -283,6 +283,8 @@ func (l *DistributedLog) WaitForLeader(timeout time.Duration) error {
 	}
 }
 
+// Shutsdown the associated raft instances and closes the underlying
+// commit log.
 func (l *DistributedLog) Close() error {
 	shutdownFuture := l.raft.Shutdown()
 	if err := shutdownFuture.Error(); err != nil {

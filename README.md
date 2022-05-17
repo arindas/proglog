@@ -22,6 +22,70 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.8.0 Chapter 8 - Raft Consensus
+Implemented a distributed version of our commit log, where the replication is governed by the Raft
+consensus protocol. There is a strict leader-follower relationship between the servers in the cluster
+and records are only copied from the leader to the follower.
+
+A single `DistributedLog` entity was introduced. This entity encapsulated together a commit log instance,
+and a Raft instance. We present the following API:
+
+```go
+// Allocates the local log's data structures and creates this log's
+// backing files in the given directory.
+//
+// Configures replication with the raft consensus protocol.
+// A raft instance contains four components:
+// - A finite state machine which represents the state of
+//  the raft instance. All raft commands are applied to the
+//  finite state machine. The FSM then inteprets the command
+//  accordingly to produce desired side effects and goto the
+//  desired state.
+// - A log store for storing the commands to be applied
+//  (distinct from our actual record log store)
+// - A stable key value store for storing Raft's configuration
+//  and cluster data. (e.g addresses of other servers in the
+//  cluster)
+// - A file snapshot store for storing data snapshots. These
+//  are used for data recovery in the event of server failures.
+// - A network streaming layer for connecting to other servers
+//  in the cluster.
+//
+// The provided directory path is used for creating all the data
+// stores. All persistent data is stored in this directory.
+func NewDistributedLog(dataDir string, config Config) (*DistributedLog, error) { … }
+
+// Applies an "AppendRecord(record)" command to the local raft instance. The raft instance
+// records this command, and first replicates this to all followers. Once this command
+// has been replicated to the majority of the followers, the command is committed by
+// applying it to the local Raft FSM. The FSM produces the desired side effect (appending
+// the record to the local log). Once the command is commited, the leader again requests
+// all the followers to commit the command.
+// This way the record is appended to the leader and all the followers consistently.
+func (l *DistributedLog) Append(record *api.Record) (uint64, error) { … }
+
+// Reads the record from the local log instance at given offset.
+func (l *DistributedLog) Read(offset uint64) (*api.Record, error) { … }
+
+// Invoked on the leader to join a Raft cluster. Adds the server with given id and address
+// as a voter to cluster of which the invocated server is a leader.
+func (l *DistributedLog) Join(id, addr string) error { … }
+
+// Invoked on the leader to remove the server with the given id from the cluster.
+func (l *DistributedLog) Leave(id string) error { … }
+
+// Waits for leader to be elected synchronously.
+// We check every second upto the given timeout duration whether a leader
+// has been elected or not. If the leader is elected at some tick second
+// we return. Otherwise we return after the timeout duration with an error.
+//
+// This method is mostly useful in tests.
+func (l *DistributedLog) WaitForLeader(timeout time.Duration) error { … }
+
+// Shutsdown the associated raft instances and closes the underlying commit log.
+func (l *DistributedLog) Close() error { … }
+```
+
 ### v0.7.1 Chapter 7 - Replication, Log Service Agent
 Implemented log replication: consume logs from every peer in the cluster and produce them locally. (This
 behavior leads to infinite replication of the same record since there is no well defined leader-follower
