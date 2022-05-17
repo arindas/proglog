@@ -22,7 +22,7 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
-### v0.8.1 Updated deps for internal/{server,discovery}
+### v0.8.1~2 Updated deps for internal/{server,discovery}
 
 ### v0.8.0 Chapter 8 - Raft Consensus
 Implemented a distributed version of our commit log, where the replication is governed by the Raft
