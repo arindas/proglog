@@ -5,8 +5,9 @@ go 1.17
 require (
 	github.com/arindas/proglog/api/log_v1 v0.0.0-00010101000000-000000000000
 	github.com/hashicorp/raft v1.3.9
-	github.com/hashicorp/raft-boltdb v0.0.0-20220329195025-15018e9b97e0
+	github.com/hashicorp/raft-boltdb/v2 v2.2.2
 	github.com/stretchr/testify v1.7.0
+	github.com/travisjeffery/go-dynaport v1.0.0
 	github.com/tysonmote/gommap v0.0.1
 	go.uber.org/zap v1.21.0
 	google.golang.org/grpc v1.44.0
@@ -22,7 +23,9 @@ require (
 	github.com/hashicorp/go-immutable-radix v1.0.0 // indirect
 	github.com/hashicorp/go-msgpack v0.5.5 // indirect
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
+	github.com/hashicorp/raft-boltdb v0.0.0-20220329195025-15018e9b97e0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	go.etcd.io/bbolt v1.3.5 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
