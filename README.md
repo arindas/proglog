@@ -22,6 +22,68 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
+### v0.9.0 Chapter 9 - Client side load balancing
+Client side load balancing empowers clients to decide how to balance reads and writes across
+multiple instances of our services. In our case, all writes first go through the leader, and
+are replicated to the rest of the nodes. Reads, however, can me made from any node, since all nodes
+are in consensus on the data. Hence we need to incorporate this behavior to our client side load
+balancing.
+
+We could opt for load balancing through a reverse proxy or a separate service altogether. Now,
+since Raft keeps track of all the servers in the cluster, we can obtain the details of the servers
+in the cluster from any node's raft instance. That way, any client could obtain the information
+of all the servers in the cluster, which would allow them to perform client side load balancing.
+The advantage here, is that we don't need a separate service for load balancing.
+
+First we provide a new API for obtaining all the servers from a single server in a cluster:
+```go
+// Returns a slice of all the servers in the cluster of which this
+// server is a member.
+func (l *DistributedLog) GetServers() ([]*api.Server, error) { … }
+```
+
+However even before that we created a new data model for representing servers:
+```proto 
+message Server {
+    string id = 1;
+    string rpc_addr = 2;
+    bool is_leader = 3;
+}
+```
+
+Now once we had a mechanism for obtaining the servers, we created a new gRPC endpoint:
+```proto 
+message GetServersRequest {}
+message GetServersResponse { repeated Server servers = 1; }
+```
+
+Finally we implemented a custom service resolver for our gRPC client to provide the gRPC
+client with all available servers in our Raft cluster. The actual load balancing behavior
+is implemented with a `Picker`.
+
+Here's the API provided by our `Resolver`:
+```go 
+type Resolver struct { … }
+
+// Name to use for our scheme for gRPC to filter out and resolve to our resolver.
+// Our target server addresses will be formatted like "proglog://our-service-address"
+func (r *Resolver) Scheme() string { … }
+
+// Sets up a client connection for querying details of servers in the cluster.
+func (r *Resolver) Build(
+	target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions,
+) (resolver.Resolver, error) { … }
+
+// Fetches the list of servers with a GetServersRequest api call, and obtains
+// the resolved addresses to use.
+func (r *Resolver) ResolveNow(resolver.ResolveNowOptions) { … }
+
+// Closes the resolver connection.
+func (r *Resolver) Close() { … }
+ 
+```
+
+
 ### v0.8.3 Chapter 8 - Replace dumb replication with Raft replication in Agent
 Incorporated the Raft based replication system in the agent.
 

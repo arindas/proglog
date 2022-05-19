@@ -294,6 +294,26 @@ func (l *DistributedLog) Close() error {
 	return l.log.Close()
 }
 
+// Returns a slice of all the servers in the cluster of which this
+// server is a member.
+func (l *DistributedLog) GetServers() ([]*api.Server, error) {
+	future := l.raft.GetConfiguration()
+	if err := future.Error(); err != nil {
+		return nil, err
+	}
+
+	servers := []*api.Server{}
+	for _, server := range future.Configuration().Servers {
+		servers = append(servers, &api.Server{
+			Id:       string(server.ID),
+			RpcAddr:  string(server.Address),
+			IsLeader: l.raft.Leader() == server.Address,
+		})
+	}
+
+	return servers, nil
+}
+
 var _ raft.FSM = (*fsm)(nil)
 
 // Finite state machine implementation for our distributed log's

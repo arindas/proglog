@@ -22,8 +22,9 @@ import (
 
 // Configuration for server. Contains providers for different services.
 type Config struct {
-	CommitLog  CommitLog
-	Authorizer Authorizer
+	CommitLog   CommitLog
+	Authorizer  Authorizer
+	GetServerer GetServerer
 }
 
 type grpcServer struct {
@@ -35,6 +36,14 @@ var _ api.LogServer = (*grpcServer)(nil)
 
 func newgrpcServer(config *Config) (*grpcServer, error) {
 	return &grpcServer{Config: config}, nil
+}
+
+func (s *grpcServer) GetServers(ctx context.Context, req *api.GetServersRequest) (*api.GetServersResponse, error) {
+	if servers, err := s.GetServerer.GetServers(); err != nil {
+		return nil, err
+	} else {
+		return &api.GetServersResponse{Servers: servers}, nil
+	}
 }
 
 // Produces a single record to the log which backs this server.
