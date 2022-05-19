@@ -22,7 +22,7 @@ use this as a reference. If you prefer the original source, refer to the officia
 
 ## Changelog
 
-### v0.9.0 Chapter 9 - Client side load balancing
+### v0.9.0 Chapter 9 - Client side load balancing: Resolver
 Client side load balancing empowers clients to decide how to balance reads and writes across
 multiple instances of our services. In our case, all writes first go through the leader, and
 are replicated to the rest of the nodes. Reads, however, can me made from any node, since all nodes
