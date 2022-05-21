@@ -16,6 +16,7 @@ import (
 
 	api "github.com/arindas/proglog/api/log_v1"
 	"github.com/arindas/proglog/internal/config"
+	"github.com/arindas/proglog/internal/loadbalance"
 )
 
 func client(t *testing.T, agent *Agent, tlsConfig *tls.Config) api.LogClient {
@@ -24,7 +25,7 @@ func client(t *testing.T, agent *Agent, tlsConfig *tls.Config) api.LogClient {
 	rpcAddr, err := agent.Config.RPCAddr()
 	require.NoError(t, err)
 
-	conn, err := grpc.Dial(fmt.Sprintf("%s", rpcAddr), opts...)
+	conn, err := grpc.Dial(fmt.Sprintf("%s:///%s", loadbalance.Name, rpcAddr), opts...)
 	require.NoError(t, err)
 	client := api.NewLogClient(conn)
 	return client
@@ -99,14 +100,15 @@ func TestAgent(t *testing.T) {
 		&api.ProduceRequest{Record: &api.Record{Value: []byte("foo")}},
 	)
 	require.NoError(t, err)
+
+	time.Sleep(3 * time.Second) // wait until replication is finished
+
 	consumeResponse, err := leaderClient.Consume(
 		context.Background(),
 		&api.ConsumeRequest{Offset: produceResponse.Offset},
 	)
 	require.NoError(t, err)
 	require.Equal(t, consumeResponse.Record.Value, []byte("foo"))
-
-	time.Sleep(3 * time.Second) // wait until replication is finished
 
 	followerClient := client(t, agents[1], peerTLSConfig)
 	consumeResponse, err = followerClient.Consume(

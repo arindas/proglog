@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Generate Config
         run: |
-          go get github.com/cloudflare/cfssl/cmd/... 
+          go get github.com/cloudflare/cfssl/cmd/...
           export PATH=${PATH}:${HOME}/go/bin
           make gencert
           make genacl
@@ -39,12 +39,17 @@ jobs:
         working-directory: ./internal/discovery
         run: |
           go test -v -race -coverprofile=profile.out -covermode=atomic
-          cat profile.out >> ${HOME}/coverage.txt 
+          cat profile.out >> ${HOME}/coverage.txt
+      - name: Test client-side load balancing
+        working-directory: ./internal/loadbalance
+        run: |
+          go test -v -race -coverprofile=profile.out -covermode=atomic
+          cat profile.out >> ${HOME}/coverage.txt
       - name: Test Agent (with raft consensus)
         working-directory: ./internal/agent
         run: |
           go test -v -race -coverprofile=profile.out -covermode=atomic
-          cat profile.out >> ${HOME}/coverage.txt 
+          cat profile.out >> ${HOME}/coverage.txt
       - name: Obtain code coverage report
         run: cp ${HOME}/coverage.txt coverage.out
       - name: Upload code coverage report to Codecov

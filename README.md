@@ -21,7 +21,61 @@ Where necessary, I have used my preferred idioms and style when implementing a s
 while still adhering to correctness with all the tests. Please keep this in mind if you plan to
 use this as a reference. If you prefer the original source, refer to the official repository instead.
 
+## Build
+Building `arindas/proglog` is a 2 step process. Generating the protobuf boilerplate using
+the provided makefile, and then running `go build` from the repository root:
+```
+git clone https://github.com/arindas/proglog.git
+cd proglog/
+make compile
+go build
+```
+
+## Testing
+Running the tests requires the ca certificates to be generated for ssl, and copied to a central
+location, along with ACL policy and model files. We follow XDG conventions and copy the files
+to `${HOME}/.config/proglog`. We also require `cfssl` and `cfssljson` for generating the certificates.
+
+Setup your environment for installing dependencies and running tests as follows:
+```
+# assuming go is already installed and ${GOBIN} is added to ${PATH}
+go get github.com/cloudflare/cfssl/cmd/...
+make gencert
+make genacl
+```
+
+Now to run the tests for a particular modules, go to its directory and run `go test`. For example:
+```
+cd ./internal/log/
+# run tests in verbose mode with race detection
+go test -v -race
+```
+
+## License
+This repository is presented under the MIT License. See [LICENSE](./LICENSE) for more details.
+
 ## Changelog
+
+### v0.9.1 Chapter 9 - Client side load balancing: Picker
+Implemented the load balancing component, which picks which sub connection to use from all the 
+connections available for a pariticular requests. (Each server in the cluster is mapped to a 
+sub connection). We implemented a `Picker` entity with the following interface:
+```go 
+// Picker represents an entity for picking which connection to use for a request.
+// It is the load balancing component of the gRPC request resolution process.
+type Picker struct { … }
+
+// Seperates the connections to the followers from the connection to the leader
+// and stores them in a Picker instance. The picker instance built is returned.
+func (p *Picker) Build(buildInfo base.PickerBuildInfo) balancer.Picker { … }
+
+// Picks the subconnection to use for the given request. All writes(i.e. Produce)
+// go through the leader. Read(i.e Consume) requests are balanced among followers
+// in a round robin fashion.
+//
+// Returns the subconnection picked, along with an error if any.
+func (p *Picker) Pick(info balancer.PickInfo) (balancer.PickResult, error) { … }
+```
 
 ### v0.9.0 Chapter 9 - Client side load balancing: Resolver
 Client side load balancing empowers clients to decide how to balance reads and writes across
@@ -410,5 +464,3 @@ We expose this log as REST API with the following methods:
 - `[GET /] { offset: uint64 } => { record: []bytes }`
   Responds with record at the offset in the request.
 
-## License
-This repository is presented under the MIT License. See [LICENSE](./LICENSE) for more details.
