@@ -57,3 +57,6 @@ compile:
 
 test:
 	go test -race -v ./...
+
+build-docker:
+	docker build -t ghcr.io/arindas/proglog:$(shell git describe --tags --abbrev=0) .

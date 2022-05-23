@@ -1,0 +1,19 @@
+name: ci-tests
+on:
+  workflow_dispatch:
+
+jobs:
+  docker-image-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker image
+        run: |
+          export IMAGE_NAME="ghcr.io/arindas/proglog:$(git describe --tags --abbrev=0)"
+          docker build -t ${IMAGE_NAME} .
+      - name: Authenticate to github docker registry
+        run: |
+          echo $GH_DOCKER_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+      - name: Push docker image
+        run: docker push 
+
