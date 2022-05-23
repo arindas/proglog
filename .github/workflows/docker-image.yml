@@ -13,7 +13,7 @@ jobs:
           docker build -t ${IMAGE_NAME} .
       - name: Authenticate to github docker registry
         run: |
-          echo $GH_DOCKER_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+          docker login ghcr.io -u arindas -p ${{ secrets.GH_DOCKER_TOCKEN }}
       - name: Push docker image
         run: docker push 
 

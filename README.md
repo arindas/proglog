@@ -58,13 +58,12 @@ This repository is presented under the MIT License. See [LICENSE](./LICENSE) for
 
 ## Changelog
 
-### v0.10.1 Added github workflow for building docker images and pushing them to ghcr.io
+### v0.10.0~3 Chapter 10 - Deploy to k8s; `proglog` command
+The command simply creates a new `Agent` instance with `agent.New(agent.Config)` and loads
+configuration values from command line flags or config files; whichever is available.
 
-### v0.10.0 Chapter 10 - Deploy; Build a command binary for starting a proglog instance
-We simply create a new `Agent` instance with `agent.New(agent.Config)`. We support loading 
-configuration values from command line flags, as well as dedicated configuration files.
-
-We also created a Dockerfile for containerizing our service.
+We also created a Dockerfile for containerizing our service along with a workflow to
+push images to github's docker image registry.
 
 ### v0.9.2~3 Migrated to a single module repo; Doc updates
 
