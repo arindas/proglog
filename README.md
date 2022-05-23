@@ -58,9 +58,11 @@ This repository is presented under the MIT License. See [LICENSE](./LICENSE) for
 
 ## Changelog
 
-### v0.9.4 Chapter 10 - Deploy; Build a command binary for starting a proglog instance
+### v0.10.0 Chapter 10 - Deploy; Build a command binary for starting a proglog instance
 We simply create a new `Agent` instance with `agent.New(agent.Config)`. We support loading 
 configuration values from command line flags, as well as dedicated configuration files.
+
+We also created a Dockerfile for containerizing our service.
 
 ### v0.9.2~3 Migrated to a single module repo; Doc updates
 
