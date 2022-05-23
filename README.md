@@ -46,6 +46,12 @@ Simply install the `proglog` command binary as follows:
 go install github.com/arindas/proglog/cmd/proglog@latest
 ```
 
+### Docker
+You may also pull the docker image as follows:
+```
+docker pull ghcr.io/arindas/proglog:latest
+```
+
 ## Usage
 ```
 $ ./proglog --help
