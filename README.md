@@ -58,7 +58,7 @@ This repository is presented under the MIT License. See [LICENSE](./LICENSE) for
 
 ## Changelog
 
-### v0.10.0~3 Chapter 10 - Deploy to k8s; `proglog` command
+### v0.10.0~9 Chapter 10 - Deploy to k8s; `proglog` command
 The command simply creates a new `Agent` instance with `agent.New(agent.Config)` and loads
 configuration values from command line flags or config files; whichever is available.
 
