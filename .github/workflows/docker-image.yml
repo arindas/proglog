@@ -16,5 +16,5 @@ jobs:
           docker login ghcr.io -u arindas -p ${{ secrets.GH_DOCKER_TOCKEN }}
       - name: Push docker image
         run: |
-          docker push "${IMAGE_NAME}"
+          docker push "ghcr.io/arindas/proglog:${GITHUB_REF##*/}"
 
