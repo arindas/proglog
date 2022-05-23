@@ -1,7 +1,4 @@
-<div align="center">
-
-<img src="./assets/logo.jpg"></img>
-
+# proglog
 [![Go Report Card](https://goreportcard.com/badge/github.com/arindas/proglog)](https://goreportcard.com/report/github.com/arindas/proglog)
 [![ci-tests](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml)
 [![codecov](https://codecov.io/gh/arindas/proglog/branch/main/graph/badge.svg?token=9YI8TVJ2U4)](https://codecov.io/gh/arindas/proglog)
@@ -9,9 +6,6 @@
 ![LOC](https://sloc.xyz/github/arindas/proglog)
 ![GitHub repo size](https://img.shields.io/github/repo-size/arindas/proglog)
 [![mit-license](https://img.shields.io/badge/License-MIT-green.svg)](https://img.shields.io/badge/License-MIT-green.svg)
----
-
-</div>
 
 A distributed commit log.
 
