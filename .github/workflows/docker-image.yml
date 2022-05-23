@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build docker image
         run: |
-          export IMAGE_NAME="ghcr.io/arindas/proglog:$(git describe --tags --abbrev=0)"
+          export IMAGE_NAME="ghcr.io/arindas/proglog:${GITHUB_REF##*/}"
           docker build -t ${IMAGE_NAME} .
       - name: Authenticate to github docker registry
         run: |
