@@ -3,6 +3,8 @@
 [![ci-tests](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml)
 [![codecov](https://codecov.io/gh/arindas/proglog/branch/main/graph/badge.svg?token=9YI8TVJ2U4)](https://codecov.io/gh/arindas/proglog)
 [![Go Reference](https://pkg.go.dev/badge/github.com/arindas/proglog.svg)](https://pkg.go.dev/github.com/arindas/proglog)
+![LOC](https://sloc.xyz/github/arindas/proglog)
+![GitHub repo size](https://img.shields.io/github/repo-size/arindas/proglog)
 [![mit-license](https://img.shields.io/badge/License-MIT-green.svg)](https://img.shields.io/badge/License-MIT-green.svg)
 
 A distributed commit log.
@@ -22,14 +24,11 @@ Where necessary, I have used my preferred idioms and style when implementing a s
 while still adhering to correctness with all the tests. Please keep this in mind if you plan to
 use this as a reference. If you prefer the original source, refer to the official repository instead.
 
-## Build
-Building `arindas/proglog` is a 2 step process. Generating the protobuf boilerplate using
-the provided makefile, and then running `go build` from the repository root:
+## Installation
+### Build from source
+Simply install the `proglog` command binary as follows:
 ```
-git clone https://github.com/arindas/proglog.git
-cd proglog/
-make compile
-go build
+go install github.com/arindas/proglog/cmd/proglog@latest
 ```
 
 ## Testing
@@ -37,25 +36,24 @@ Running the tests requires the ca certificates to be generated for ssl, and copi
 location, along with ACL policy and model files. We follow XDG conventions and copy the files
 to `${HOME}/.config/proglog`. We also require `cfssl` and `cfssljson` for generating the certificates.
 
-Setup your environment for installing dependencies and running tests as follows:
+Setup your environment and run the tests as follows:
 ```
+git clone https://github.com/arindas/proglog.git; cd proglog/
+
 # assuming go is already installed and ${GOBIN} is added to ${PATH}
 go get github.com/cloudflare/cfssl/cmd/...
+
 make gencert
 make genacl
-```
-
-Now to run the tests for a particular modules, go to its directory and run `go test`. For example:
-```
-cd ./internal/log/
-# run tests in verbose mode with race detection
-go test -v -race
+make test
 ```
 
 ## License
 This repository is presented under the MIT License. See [LICENSE](./LICENSE) for more details.
 
 ## Changelog
+
+### v0.9.2~3 Migrated to a single module repo; Doc updates
 
 ### v0.9.1 Chapter 9 - Client side load balancing: Picker
 Implemented the load balancing component, which picks which sub connection to use from all the 
