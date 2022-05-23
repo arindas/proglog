@@ -1,6 +1,8 @@
 name: docker-image
 on:
   workflow_dispatch:
+  release:
+    types: [created]
 
 jobs:
   docker-image-build:
@@ -9,12 +11,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build docker image
         run: |
-          export IMAGE_NAME="ghcr.io/arindas/proglog:${GITHUB_REF##*/}"
-          docker build -t ${IMAGE_NAME} .
+          export IMAGE_PREFIX="ghcr.io/arindas/proglog"
+          docker build -t "${IMAGE_PREFIX}:${GITHUB_REF##*/}" "${IMAGE_PREFIX}:latest" .
       - name: Authenticate to github docker registry
         run: |
           docker login ghcr.io -u arindas -p ${{ secrets.GH_DOCKER_TOCKEN }}
       - name: Push docker image
         run: |
-          docker push "ghcr.io/arindas/proglog:${GITHUB_REF##*/}"
+          docker push -a "ghcr.io/arindas/proglog"
 
