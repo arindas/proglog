@@ -1,3 +1,5 @@
+<div align="center">
+
 # proglog
 [![Go Report Card](https://goreportcard.com/badge/github.com/arindas/proglog)](https://goreportcard.com/report/github.com/arindas/proglog)
 [![ci-tests](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/proglog/actions/workflows/ci-tests.yml)
@@ -6,6 +8,9 @@
 ![LOC](https://sloc.xyz/github/arindas/proglog)
 ![GitHub repo size](https://img.shields.io/github/repo-size/arindas/proglog)
 [![mit-license](https://img.shields.io/badge/License-MIT-green.svg)](https://img.shields.io/badge/License-MIT-green.svg)
+---
+
+</div>
 
 A distributed commit log.
 
@@ -52,6 +57,10 @@ make test
 This repository is presented under the MIT License. See [LICENSE](./LICENSE) for more details.
 
 ## Changelog
+
+### v0.9.4 Chapter 10 - Deploy; Build a command binary for starting a proglog instance
+We simply create a new `Agent` instance with `agent.New(agent.Config)`. We support loading 
+configuration values from command line flags, as well as dedicated configuration files.
 
 ### v0.9.2~3 Migrated to a single module repo; Doc updates
 
