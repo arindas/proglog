@@ -13,7 +13,7 @@ jobs:
       - name: Build docker image
         run: |
           export IMAGE_PREFIX="ghcr.io/arindas/proglog"
-          docker build -t "${IMAGE_PREFIX}:${GITHUB_REF##*/}" "${IMAGE_PREFIX}:latest" .
+          docker build -t "${IMAGE_PREFIX}:${GITHUB_REF##*/}" -t "${IMAGE_PREFIX}:latest" .
       - name: Authenticate to github docker registry
         run: |
           docker login ghcr.io -u arindas -p ${{ secrets.GH_DOCKER_TOCKEN }}
