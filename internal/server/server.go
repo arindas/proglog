@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	api "github.com/arindas/proglog/api/log_v1"
+	api "github.com/arindas/proglog/api/v1"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"

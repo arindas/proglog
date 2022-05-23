@@ -15,7 +15,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	api "github.com/arindas/proglog/api/log_v1"
+	api "github.com/arindas/proglog/api/v1"
 )
 
 // DistributedLog implements a Raft consensus driven replicated log.

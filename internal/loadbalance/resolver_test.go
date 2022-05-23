@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/serviceconfig"
 
-	api "github.com/arindas/proglog/api/log_v1"
+	api "github.com/arindas/proglog/api/v1"
 	"github.com/arindas/proglog/internal/config"
 	"github.com/arindas/proglog/internal/server"
 )

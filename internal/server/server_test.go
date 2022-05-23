@@ -19,7 +19,7 @@ import (
 	"go.opencensus.io/examples/exporter"
 	"go.uber.org/zap"
 
-	api "github.com/arindas/proglog/api/log_v1"
+	api "github.com/arindas/proglog/api/v1"
 	"github.com/arindas/proglog/internal/auth"
 	"github.com/arindas/proglog/internal/config"
 	"github.com/arindas/proglog/internal/log"
