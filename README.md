@@ -9,7 +9,6 @@
 ![LOC](https://sloc.xyz/github/arindas/proglog)
 ![GitHub repo size](https://img.shields.io/github/repo-size/arindas/proglog)
 [![mit-license](https://img.shields.io/badge/License-MIT-green.svg)](https://img.shields.io/badge/License-MIT-green.svg)
-
 ---
 
 </div>
