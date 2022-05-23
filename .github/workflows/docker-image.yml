@@ -1,8 +1,9 @@
 name: docker-image
 on:
   workflow_dispatch:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   docker-image-build:
