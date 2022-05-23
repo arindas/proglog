@@ -30,11 +30,47 @@ while still adhering to correctness with all the tests. Please keep this in mind
 use this as a reference. If you prefer the original source, refer to the official repository instead.
 
 ## Installation
+
+### Using pre-built binaries
+Simply download the binary archive from the latest release and copy them to a location on your path.
+For instance, installing proglog v0.10.11 on linux amd64 would be as simple as this:
+```
+wget https://github.com/arindas/proglog/releases/download/v0.10.11/proglog-v0.10.11-linux-amd64.tar.gz
+tar xzf proglog-v0.10.11-linux-amd64.tar.gz 
+cp ./proglog ~/.local/bin
+```
+
 ### Build from source
 Simply install the `proglog` command binary as follows:
 ```
 go install github.com/arindas/proglog/cmd/proglog@latest
 ```
+
+## Usage
+```
+$ ./proglog --help
+Usage:
+  proglog [flags]
+
+Flags:
+      --acl-model-file string         Path to ACL model.
+      --acl-policy-file string        Path to ACL policy.
+      --bind-addr string              Address to bind Serf on (default "127.0.0.1:8401")
+      --bootstrap                     Bootstrap the cluster.
+      --config-file string            Path to config file.
+      --data-dir string               Directory to store log and Raft data (default "/tmp/proglog")
+  -h, --help                          help for proglog
+      --node-name string              Unique server ID. (default "arubox")
+      --peer-tls-ca-file string       Path to peer certificate authority.
+      --peer-tls-cert-file string     Path to peer tls cert.
+      --peer-tls-key-file string      Path to peer tls key.
+      --rpc-port int                  Port for RPC clients (and Raft) connections (default 8400)
+      --server-tls-ca-file string     Path to server certificate authority.
+      --server-tls-cert-file string   Path to server tls cert.
+      --server-tls-key-file string    Path to server tls key.
+      --start-join-addrs strings      Serf addresses to join.
+```
+One can either pass in the path of the config file, or pass in all the command line flags.
 
 ## Testing
 Running the tests requires the ca certificates to be generated for ssl, and copied to a central
@@ -58,7 +94,7 @@ This repository is presented under the MIT License. See [LICENSE](./LICENSE) for
 
 ## Changelog
 
-### v0.10.0~9 Chapter 10 - Deploy to k8s; `proglog` command
+### v0.10.0~11 Chapter 10 - Deploy to k8s; `proglog` command
 The command simply creates a new `Agent` instance with `agent.New(agent.Config)` and loads
 configuration values from command line flags or config files; whichever is available.
 
